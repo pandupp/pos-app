@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import apiClient from "@/lib/axios";
-import { formatRupiah } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
-import type { Item, CartItem, Category } from "@/types/api";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import apiClient from "../lib/axios";
+import { formatRupiah } from "../lib/utils";
+import { useAuth } from "../context/AuthContext";
+import type { Item, CartItem, Category } from "../types/api";
+import { Input } from "../components/ui/input";
+import { Dialog, DialogContent } from "../components/ui/dialog";
 import { Search, Plus, Minus, Package, Banknote, QrCode, X, Trash2 } from "lucide-react"; 
 
 export default function POSPage() {

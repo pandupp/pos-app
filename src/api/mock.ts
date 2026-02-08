@@ -1,4 +1,4 @@
-import type { Item, Category, User } from '@/types/api';
+import type { Item, Category, User } from '../types/api';
 
 // --- 1. DATA USER (Login) ---
 export const MOCK_USERS: User[] = [

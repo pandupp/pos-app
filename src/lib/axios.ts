@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { MOCK_USERS, MOCK_ITEMS, MOCK_CATEGORIES } from '@/api/mock';
+import { MOCK_USERS, MOCK_ITEMS, MOCK_CATEGORIES } from '../api/mock';
 
 // Buat instance axios
 const apiClient = axios.create({

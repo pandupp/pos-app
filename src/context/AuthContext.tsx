@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import type { User } from "@/types/api";
+import type { User } from "../types/api";
 
 type StoreType = 'printing' | 'retail' | 'general';
 
