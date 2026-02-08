@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import apiClient from "../lib/axios";
-import { formatRupiah } from "@/lib/utils";
+import { formatRupiah } from "../lib/utils";
 import { useAuth } from "../context/AuthContext";
 import type { Item, Category } from "../types/api";
-import { Input } from "/..components/ui/input";
+import { Input } from "../components/ui/input"; 
 import { Dialog, DialogContent } from "../components/ui/dialog";
 import { Search, Plus, Package, Edit3, Trash2, Save, X, Image as ImageIcon } from "lucide-react";
 
@@ -66,7 +66,7 @@ export default function ItemsPage() {
     });
     setIsEditing(true);
     setIsModalOpen(true);
-};
+  };
 
   const handleAdd = () => {
     setFormData(defaultForm);
