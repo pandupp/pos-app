@@ -4,13 +4,14 @@ import { formatRupiah } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { 
   Calendar, 
-  ArrowUpRight,  
+  ArrowUpRight, 
   Download, 
   Search, 
   ChevronRight, 
   FileText
 } from "lucide-react";
 
+// Dummy Data Riwayat Transaksi
 const MOCK_HISTORY = [
   { id: "INV-1707361", date: "2024-02-08T10:30:00", total: 150000, method: "cash", status: "success", items: 3 },
   { id: "INV-1707362", date: "2024-02-08T11:15:00", total: 45000, method: "qris", status: "success", items: 1 },
@@ -35,10 +36,11 @@ export default function ReportsPage() {
 
   // Fungsi Reprint (Simulasi)
   const handleReprint = (trx: any) => {
+    const dummyReprintData = {
         id: trx.id,
         date: trx.date,
         items: [
-            { name: "Produk Contoh (Reprint)", qty: trx.items, price: trx.total / trx.items } 
+            { name: "Produk Contoh (Reprint)", qty: trx.items, price: trx.total / trx.items, category_id: 1, unit: 'pcs', image_url: '', is_customizable: false, stock: 10 } 
         ],
         total: trx.total,
         payment: {
@@ -48,6 +50,7 @@ export default function ReportsPage() {
         },
         storeType
     };
+    // ------------------------------------------------------------------
     
     localStorage.setItem("last_transaction", JSON.stringify(dummyReprintData));
     navigate("/invoice");
@@ -79,7 +82,7 @@ export default function ReportsPage() {
 
       {/* 1. SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-         {/* Card Omset  */}
+         {/* Card Omset (Besar) */}
          <div className={`col-span-1 md:col-span-2 ${bgTheme} rounded-[24px] p-6 text-white shadow-lg relative overflow-hidden group`}>
              <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700"></div>
              
