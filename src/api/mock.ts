@@ -1,42 +1,40 @@
-import type { AxiosRequestConfig } from 'axios';
-import type { User, Category, Item } from '@/types/api';
+import type { Item, Category, User } from '@/types/api';
 
-// --- 1. DATA DUMMY HYBRID (Printing & Seragam) ---
-
-const MOCK_USERS: User[] = [
-  // --- USER 1: TOKO SERAGAM ---
+// --- 1. DATA USER (Login) ---
+export const MOCK_USERS: User[] = [
   { 
     id: 1, 
     name: 'Admin Seragam', 
     email: 'admin@arjuna.seragam', 
-    role: 'admin' 
+    role: 'admin',
+    avatar: 'https://ui-avatars.com/api/?name=Admin+Seragam&background=random'
   },
-
-  // --- USER 2: TOKO PRINTING ---
   { 
     id: 2, 
     name: 'Operator Printing', 
     email: 'admin@arjuna.digital', 
-    role: 'operator' 
+    role: 'operator',
+    avatar: 'https://ui-avatars.com/api/?name=Operator+Print&background=random'
   },
-
-  // --- USER 3: OWNER ---
   { 
     id: 3, 
     name: 'Pak Bos', 
     email: 'owner@arjuna.group', 
-    role: 'owner' 
+    role: 'owner',
+    avatar: 'https://ui-avatars.com/api/?name=Pak+Bos&background=random'
   },
 ];
 
-const MOCK_CATEGORIES: Category[] = [
+// --- 2. DATA KATEGORI ---
+export const MOCK_CATEGORIES: Category[] = [
   { id: 1, name: 'Digital Printing' }, 
   { id: 2, name: 'Seragam Sekolah' },  
   { id: 3, name: 'ATK & Aksesoris' },  
 ];
 
-const MOCK_ITEMS: Item[] = [
-  // --- PRODUK TOKO 1: DIGITAL PRINTING (Satuan Meter) ---
+// --- 3. DATA PRODUK (Items) ---
+export const MOCK_ITEMS: Item[] = [
+  // --- PRODUK TOKO 1: DIGITAL PRINTING ---
   {
     id: 101,
     category_id: 1,
@@ -44,9 +42,9 @@ const MOCK_ITEMS: Item[] = [
     description: 'Spanduk Outdoor Hemat',
     image_url: 'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?auto=format&fit=crop&w=300&q=80',
     stock: 1000, 
-    price: 15000, // Harga per m2
-    unit: 'm²',   // Satuan meter persegi
-    is_customizable: true // MUNCOL POP-UP
+    price: 15000, 
+    unit: 'm²',   
+    is_customizable: true 
   },
   {
     id: 102,
@@ -57,22 +55,21 @@ const MOCK_ITEMS: Item[] = [
     stock: 500,
     price: 85000,
     unit: 'm',
-    is_customizable: true // MUNCOL POP-UP
+    is_customizable: true 
   },
-
   {
     id: 103,
-    category_id: 1, // Tetap kategori Printing
+    category_id: 1, 
     name: 'Sticker Vinyl A3+ (Print & Cut)',
     description: 'Ukuran 32x48cm, sudah kiss cut',
     image_url: 'https://images.unsplash.com/photo-1616628188550-808963486a96?auto=format&fit=crop&w=300&q=80',
     stock: 1000,
     price: 15000,
-    unit: 'lbr', // Satuan Lembar
-    is_customizable: false // LANGSUNG MASUK KERANJANG (Gak perlu input P x L)
+    unit: 'lbr', 
+    is_customizable: false 
   },
 
-  // --- PRODUK TOKO 2: SERAGAM (Satuan Pcs) ---
+  // --- PRODUK TOKO 2: SERAGAM ---
   {
     id: 201,
     category_id: 2,
@@ -109,67 +106,3 @@ const MOCK_ITEMS: Item[] = [
     is_customizable: false
   }
 ];
-
-// --- 2. HANDLER UTAMA ---
-
-export const mockHandler = (config: AxiosRequestConfig): any => {
-  const { url, method, data } = config;
-  const path = url?.replace('/v1', '') || '';
-
-  // Helper Parsing Body
-  let body: any = {};
-  try {
-    if (data && typeof data === 'string') body = JSON.parse(data);
-    else if (data) body = data;
-  } catch (e) { console.error("Parse Error", e); }
-
-  console.log(`[MOCK API] ${method?.toUpperCase()} ${path}`, body);
-
-  // --- LOGIN LOGIC (Updated) ---
-  if (path.includes('/auth/login') && method === 'post') {
-    const loginEmail = body.email; 
-    
-    // Cari user berdasarkan email yang diinput
-    const user = MOCK_USERS.find((u) => u.email === loginEmail);
-
-    // Password: 123456
-    if (user && body.password === '123456') {
-      return successResponse({
-          user: user,
-          token: 'mock-token-' + user.id,
-      });
-    }
-    return errorResponse('Email atau Password salah! (Coba: admin@arjuna.seragam)', 401);
-  }
-
-  // --- DATA DASHBOARD ---
-  if (path.includes('/dashboard/summary') && method === 'get') {
-    return successResponse({
-      total_revenue: 25800000,
-      transaction_count: 45,
-      items_sold: 120,
-      top_selling_item: "Kemeja Putih SD (Pendek)" 
-    });
-  }
-
-  // --- ITEMS & CATEGORIES ---
-  if (path.includes('/items') && method === 'get') {
-    return successResponse(MOCK_ITEMS);
-  }
-  if (path.includes('/categories') && method === 'get') {
-    return successResponse(MOCK_CATEGORIES);
-  }
-
-  return errorResponse('Endpoint not found', 404);
-};
-
-// --- HELPER RESPONSE ---
-const successResponse = (data: any) => ({
-  success: true, message: 'OK', data
-});
-
-const errorResponse = (message: string, code: number = 400) => {
-  const error: any = new Error(message);
-  error.response = { status: code, data: { success: false, message } };
-  throw error;
-};
