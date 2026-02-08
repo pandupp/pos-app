@@ -33,19 +33,28 @@ export interface Item {
   image_url: string;
   stock: number;
   price: number;
+
+  unit: string; 
+  is_customizable?: boolean; 
 }
 
-export interface CartItem {
-  item_id: number;
-  qty: number;
-  note?: string;
-  name: string;
-  price: number;
-  image_url: string;
+export interface CartItem extends Item {
+  qty: number;         
+  note?: string;      
+  
+  custom_width?: number;  
+  custom_length?: number;
+  originalId?: number; 
 }
 
 export interface TransactionPayload {
-  items: { item_id: number; qty: number; note?: string }[];
+  items: { 
+    item_id: number; 
+    qty: number; 
+    note?: string;
+    custom_width?: number; 
+    custom_length?: number;
+  }[];
   manual_discount: number;
   tax_percent: number;
   payment_method: 'cash' | 'qris' | 'transfer';

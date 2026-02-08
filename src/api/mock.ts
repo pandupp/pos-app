@@ -1,106 +1,175 @@
 import type { AxiosRequestConfig } from 'axios';
-import type { ApiResponse, User, Category, Item } from '@/types/api';
+import type { User, Category, Item } from '@/types/api';
 
-// --- 1. DATA DUMMY ---
+// --- 1. DATA DUMMY HYBRID (Printing & Seragam) ---
+
 const MOCK_USERS: User[] = [
-  { id: 1, name: 'Budi Owner', email: 'owner@store.com', role: 'owner' },
-  { id: 2, name: 'Siti Admin', email: 'admin@store.com', role: 'admin' },
-  { id: 3, name: 'Andi Kasir', email: 'cashier@store.com', role: 'operator' },
-];
+  // --- USER 1: TOKO SERAGAM ---
+  { 
+    id: 1, 
+    name: 'Admin Seragam', 
+    email: 'admin@arjuna.seragam', 
+    role: 'admin' 
+  },
 
-const MOCK_CATEGORIES: Category[] = [
-  { id: 1, name: 'Minuman' },
-  { id: 2, name: 'Makanan' },
-  { id: 3, name: 'Snack' },
-];
+  // --- USER 2: TOKO PRINTING ---
+  { 
+    id: 2, 
+    name: 'Operator Printing', 
+    email: 'admin@arjuna.digital', 
+    role: 'operator' 
+  },
 
-const MOCK_ITEMS: Item[] = [
-  {
-    id: 101,
-    category_id: 1,
-    name: 'Kopi Susu Gula Aren',
-    description: 'Robusta blend dengan gula aren asli',
-    image_url: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?q=80&w=1000&auto=format&fit=crop',
-    stock: 45,
-    price: 18000,
+  // --- USER 3: OWNER ---
+  { 
+    id: 3, 
+    name: 'Pak Bos', 
+    email: 'owner@arjuna.group', 
+    role: 'owner' 
   },
 ];
 
+const MOCK_CATEGORIES: Category[] = [
+  { id: 1, name: 'Digital Printing' }, 
+  { id: 2, name: 'Seragam Sekolah' },  
+  { id: 3, name: 'ATK & Aksesoris' },  
+];
+
+const MOCK_ITEMS: Item[] = [
+  // --- PRODUK TOKO 1: DIGITAL PRINTING (Satuan Meter) ---
+  {
+    id: 101,
+    category_id: 1,
+    name: 'Flexi China 280g',
+    description: 'Spanduk Outdoor Hemat',
+    image_url: 'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?auto=format&fit=crop&w=300&q=80',
+    stock: 1000, 
+    price: 15000, // Harga per m2
+    unit: 'm²',   // Satuan meter persegi
+    is_customizable: true // MUNCOL POP-UP
+  },
+  {
+    id: 102,
+    category_id: 1,
+    name: 'Sticker Vinyl (Meteran)',
+    description: 'Bahan Ritrama/Orajet (Lebar 1m)',
+    image_url: 'https://images.unsplash.com/photo-1572044162444-ad60f128bdea?auto=format&fit=crop&w=300&q=80',
+    stock: 500,
+    price: 85000,
+    unit: 'm',
+    is_customizable: true // MUNCOL POP-UP
+  },
+
+  {
+    id: 103,
+    category_id: 1, // Tetap kategori Printing
+    name: 'Sticker Vinyl A3+ (Print & Cut)',
+    description: 'Ukuran 32x48cm, sudah kiss cut',
+    image_url: 'https://images.unsplash.com/photo-1616628188550-808963486a96?auto=format&fit=crop&w=300&q=80',
+    stock: 1000,
+    price: 15000,
+    unit: 'lbr', // Satuan Lembar
+    is_customizable: false // LANGSUNG MASUK KERANJANG (Gak perlu input P x L)
+  },
+
+  // --- PRODUK TOKO 2: SERAGAM (Satuan Pcs) ---
+  {
+    id: 201,
+    category_id: 2,
+    name: 'Kemeja Putih SD (Pendek)',
+    description: 'Bahan Oxford, tidak panas, Size M',
+    image_url: 'https://images.unsplash.com/photo-1624225206972-e1610e6a1078?auto=format&fit=crop&w=300&q=80',
+    stock: 50, 
+    price: 45000,
+    unit: 'pcs', 
+    is_customizable: false
+  },
+  {
+    id: 202,
+    category_id: 2,
+    name: 'Celana Merah SD (Panjang)',
+    description: 'Bahan Drill kuat, pinggang karet',
+    image_url: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=300&q=80',
+    stock: 35,
+    price: 55000,
+    unit: 'pcs',
+    is_customizable: false
+  },
+  
+  // --- PRODUK UMUM ---
+  {
+    id: 301,
+    category_id: 3,
+    name: 'Topi Sekolah Logo',
+    description: 'Topi merah putih dengan logo tut wuri',
+    image_url: 'https://images.unsplash.com/photo-1576871337632-b9aef4c17ab9?auto=format&fit=crop&w=300&q=80',
+    stock: 100,
+    price: 15000,
+    unit: 'pcs',
+    is_customizable: false
+  }
+];
+
 // --- 2. HANDLER UTAMA ---
+
 export const mockHandler = (config: AxiosRequestConfig): any => {
   const { url, method, data } = config;
   const path = url?.replace('/v1', '') || '';
+
+  // Helper Parsing Body
   let body: any = {};
   try {
-    if (data && typeof data === 'string') {
-      body = JSON.parse(data);
-    } else if (data) {
-      body = data;
-    }
-  } catch (e) {
-    console.error("Gagal parsing JSON:", e);
-  }
+    if (data && typeof data === 'string') body = JSON.parse(data);
+    else if (data) body = data;
+  } catch (e) { console.error("Parse Error", e); }
 
   console.log(`[MOCK API] ${method?.toUpperCase()} ${path}`, body);
 
-  // --- LOGIN ---
+  // --- LOGIN LOGIC (Updated) ---
   if (path.includes('/auth/login') && method === 'post') {
-    const user = MOCK_USERS.find((u) => u.email === body.email);
+    const loginEmail = body.email; 
+    
+    // Cari user berdasarkan email yang diinput
+    const user = MOCK_USERS.find((u) => u.email === loginEmail);
 
-    // Cek password (Hardcode: 123456)
+    // Password: 123456
     if (user && body.password === '123456') {
-      return {
-        success: true,
-        message: 'Login successful',
-        data: {
+      return successResponse({
           user: user,
-          token: 'mock-token-rahasia-123456',
-        },
-      };
+          token: 'mock-token-' + user.id,
+      });
     }
-    return errorResponse('Email atau password salah!', 401);
+    return errorResponse('Email atau Password salah! (Coba: admin@arjuna.seragam)', 401);
   }
 
-  // --- GET CATEGORIES ---
+  // --- DATA DASHBOARD ---
+  if (path.includes('/dashboard/summary') && method === 'get') {
+    return successResponse({
+      total_revenue: 25800000,
+      transaction_count: 45,
+      items_sold: 120,
+      top_selling_item: "Kemeja Putih SD (Pendek)" 
+    });
+  }
+
+  // --- ITEMS & CATEGORIES ---
+  if (path.includes('/items') && method === 'get') {
+    return successResponse(MOCK_ITEMS);
+  }
   if (path.includes('/categories') && method === 'get') {
     return successResponse(MOCK_CATEGORIES);
   }
 
-  // --- GET ITEMS ---
-  if (path.includes('/items') && method === 'get') {
-    return successResponse(MOCK_ITEMS, {
-      current_page: 1,
-      total_pages: 1,
-      total_items: MOCK_ITEMS.length,
-    });
-  }
-
-  // --- TRANSACTIONS ---
-  if (path.includes('/transactions') && method === 'post') {
-    return successResponse({
-      transaction_id: `TRX-${Date.now()}`,
-      created_at: new Date().toISOString(),
-      grand_total: 50000,
-      cashier_name: 'Andi Kasir',
-    });
-  }
-
-  return errorResponse('Endpoint not found in Mock', 404);
+  return errorResponse('Endpoint not found', 404);
 };
 
-// --- HELPER ---
-const successResponse = (data: any, meta?: any) => ({
-  success: true,
-  message: 'Operation successful (MOCK)',
-  data,
-  meta,
+// --- HELPER RESPONSE ---
+const successResponse = (data: any) => ({
+  success: true, message: 'OK', data
 });
 
 const errorResponse = (message: string, code: number = 400) => {
   const error: any = new Error(message);
-  error.response = {
-    status: code,
-    data: { success: false, message },
-  };
+  error.response = { status: code, data: { success: false, message } };
   throw error;
 };
